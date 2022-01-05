@@ -12,7 +12,7 @@ Visualisation d'un **fichier HTML** du **drive**
 import IPython
 from google.colab import drive
 drive.mount('/drive')
-IPython.display.HTML(filename='/drive/My Drive/Colab Notebooks/Vestack-MAQUETTE-MEP Venansault v2 - Copie.html')
+IPython.display.HTML(filename='/drive/My Drive/Colab Notebooks/Vestack-MAQUETTE-MEP Venansault v2 - VMC.html')
 
 """**Import du module BeautifulSoup**
 
@@ -23,7 +23,7 @@ from bs4 import BeautifulSoup
 
 """Import d'un **fichier HTML** du **drive**"""
 
-with open("/drive/My Drive/Colab Notebooks/Vestack-MAQUETTE-MEP Venansault v2 - Copie.html") as fp:
+with open("/drive/My Drive/Colab Notebooks/Vestack-MAQUETTE-MEP Venansault v2 - VMC.html") as fp:
     soup = BeautifulSoup(fp, "html.parser")
 
 """Suppression de l'en-tête du fichier pour conserver que les clashs"""
@@ -54,7 +54,7 @@ table2,table3,table4= [],[],[]
 for elem in table :
   #table2.append(j)
   if j%3 != 0 :
-    clash_final2=table[j].split(': ID')
+    clash_final2=table[j].split(': id')
     table2.append(clash_final2)
   j+=1
 
@@ -99,8 +99,46 @@ df
 """Télécharger le tableau en format .xlsx"""
 
 import pandas as pd
+from google.colab import files
 writer = pd.ExcelWriter('TableauDeDetectionClashs.xlsx')
 df.to_excel(writer, index = False)
 writer.save()
 files.download('TableauDeDetectionClashs.xlsx')
 
+table5[0]
+
+"""**Présentation des clash par type de réseaux**
+
+
+"""
+
+import matplotlib.pyplot as plt
+labels_occurence,labels_unique,sizes = [],[],[]
+for elem in table5 :
+  labels_occurence.append(elem[0])
+for elem in table5 :
+  if elem[0] not in labels_unique :
+    labels_unique.append(elem[0])
+#print(labels_occurence)  
+#print(labels_unique)
+for elem in labels_unique:
+  sizes.append(labels_occurence.count(elem))
+sizes
+
+import random
+long = len(labels_unique)
+#print(n)
+get_colors = lambda n: list(map(lambda i: "#" + "%06x" % random.randint(0, 0xFFFFFF),range(n)))
+colors = get_colors(long)
+
+#labels = 'Allemagne', 'France', 'Belgique', 'Espagne'
+#sizes = [15, 80, 45, 40]
+#colors = ['yellowgreen', 'gold', 'lightskyblue', 'lightcoral']
+
+plt.pie(sizes, labels=labels_unique, colors=colors, 
+        autopct='%1.1f%%', shadow=True, startangle=90)
+
+plt.axis('equal')
+
+plt.savefig('PieChartClashDetection.png')
+plt.show()
